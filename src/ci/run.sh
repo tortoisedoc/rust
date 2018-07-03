@@ -61,6 +61,12 @@ if [ "$DEPLOY$DEPLOY_ALT" != "" ]; then
   elif [ "$DEPLOY_ALT" != "" ]; then
     RUST_CONFIGURE_ARGS="$RUST_CONFIGURE_ARGS --enable-llvm-assertions"
   fi
+
+  if [ "$RUST_RELEASE_CHANNEL" = nightly ]; then
+      if [ "$MACOSX_DEPLOYMENT_TARGET" != "" ]; then
+          RUST_CONFIGURE_ARGS="$RUST_CONFIGURE_ARGS --enable-lldb"
+      fi
+  fi
 else
   # We almost always want debug assertions enabled, but sometimes this takes too
   # long for too little benefit, so we just turn them off.
