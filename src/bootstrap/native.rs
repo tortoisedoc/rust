@@ -199,6 +199,8 @@ impl Step for Llvm {
         if builder.config.lldb_enabled {
             cfg.define("LLVM_EXTERNAL_CLANG_SOURCE_DIR", builder.src.join("src/tools/clang"));
             cfg.define("LLVM_EXTERNAL_LLDB_SOURCE_DIR", builder.src.join("src/tools/lldb"));
+            // For the time being, disable code signing.
+            cfg.define("LLDB_CODESIGN_IDENTITY", "");
         } else {
             // LLDB requires libxml2; but otherwise we want it to be disabled.
             // See https://github.com/rust-lang/rust/pull/50104
