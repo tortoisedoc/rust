@@ -95,7 +95,7 @@ matrix:
         CI_JOB_NAME=dist-i686-apple
       os: osx
       osx_image: xcode9.3-moar
-      if: branch = auto
+      if: branch = try OR branch = auto
 
     - env: >
         RUST_CHECK_TARGET=dist
@@ -109,7 +109,7 @@ matrix:
         CI_JOB_NAME=dist-x86_64-apple
       os: osx
       osx_image: xcode9.3-moar
-      if: branch = auto
+      if: branch = try OR branch = auto
 
     # Linux builders, remaining docker images
     - env: IMAGE=arm-android
@@ -233,7 +233,8 @@ install:
         osx)
           if [[ "$RUST_CHECK_TARGET" == dist ]]; then
             travis_retry brew update &&
-            travis_retry brew install xz;
+            travis_retry brew install xz &&
+            travis_retry brew install swig;
           fi &&
           travis_retry curl -fo /usr/local/bin/sccache https://s3-us-west-1.amazonaws.com/rust-lang-ci2/rust-ci-mirror/2018-04-02-sccache-x86_64-apple-darwin &&
             chmod +x /usr/local/bin/sccache &&
