@@ -162,6 +162,8 @@ impl Step for Llvm {
         cfg.define("LLVM_OCAML_INSTALL_PATH",
             env::var_os("LLVM_OCAML_INSTALL_PATH").unwrap_or_else(|| "usr/lib/ocaml".into()));
 
+        let want_lldb = builder.config.lldb_enabled && !self.emscripten;
+
         // This setting makes the LLVM tools link to the dynamic LLVM library,
         // which saves both memory during parallel links and overall disk space
         // for the tools.  We don't distribute any of those tools, so this is
@@ -170,12 +172,12 @@ impl Step for Llvm {
         // If we are shipping llvm tools then we statically link them LLVM
         if (target.contains("linux-gnu") || target.contains("apple-darwin")) &&
             !builder.config.llvm_tools_enabled &&
-            !builder.config.lldb_enabled {
+            !want_lldb {
                 cfg.define("LLVM_LINK_LLVM_DYLIB", "ON");
         }
 
         // For distribution we want the LLVM tools to be *statically* linked to libstdc++
-        if builder.config.llvm_tools_enabled || builder.config.lldb_enabled {
+        if builder.config.llvm_tools_enabled || want_lldb {
             if !target.contains("windows") {
                 if target.contains("apple") {
                     cfg.define("CMAKE_EXE_LINKER_FLAGS", "-static-libstdc++");
@@ -196,7 +198,7 @@ impl Step for Llvm {
             cfg.define("LLVM_BUILD_32_BITS", "ON");
         }
 
-        if builder.config.lldb_enabled {
+        if want_lldb {
             cfg.define("LLVM_EXTERNAL_CLANG_SOURCE_DIR", builder.src.join("src/tools/clang"));
             cfg.define("LLVM_EXTERNAL_LLDB_SOURCE_DIR", builder.src.join("src/tools/lldb"));
             // For the time being, disable code signing.
